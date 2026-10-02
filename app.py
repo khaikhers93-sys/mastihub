@@ -36,15 +36,6 @@ def get_db():
 def init_db():
     conn = get_db()
 
-    # Add daily tracking columns to older databases
-    columns = [row["name"] for row in conn.execute("PRAGMA table_info(users)").fetchall()]
-
-    if "today_points" not in columns:
-        conn.execute("ALTER TABLE users ADD COLUMN today_points INTEGER DEFAULT 0")
-
-    if "last_date" not in columns:
-        conn.execute("ALTER TABLE users ADD COLUMN last_date TEXT")
-
     conn.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -78,10 +69,17 @@ def init_db():
         )
     """)
 
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS platform_revenue (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            amount REAL NOT NULL,
+            source TEXT NOT NULL,
+            created_at TEXT NOT NULL
+        )
+    """)
+
     conn.commit()
     conn.close()
-
-
 @app.route("/")
 def home():
 
