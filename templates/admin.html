@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MastiHub Admin</title>
+
+<style>
+body{
+    font-family:Arial;
+    background:#0f172a;
+    color:white;
+    margin:0;
+}
+
+.box{
+    max-width:900px;
+    margin:auto;
+    padding:20px;
+}
+
+h1{
+    margin-bottom:20px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+}
+
+.card{
+    background:#1e293b;
+    padding:18px;
+    margin:12px 0;
+    border-radius:16px;
+    box-shadow:0 5px 20px #0005;
+}
+
+.stat{
+    font-size:25px;
+    font-weight:bold;
+    margin-top:8px;
+}
+
+.green{color:#22c55e}
+.yellow{color:#facc15}
+.blue{color:#38bdf8}
+
+.btn{
+    display:inline-block;
+    padding:10px 14px;
+    background:#6c2cff;
+    color:white;
+    text-decoration:none;
+    border-radius:8px;
+    margin:4px;
+}
+
+.reject{
+    background:#dc2626;
+}
+
+.approve{
+    background:#16a34a;
+}
+
+input{
+    width:90%;
+    padding:12px;
+    margin:6px 0;
+    border-radius:8px;
+    border:0;
+}
+
+button{
+    padding:12px 18px;
+    border:0;
+    border-radius:8px;
+    background:#22c55e;
+    color:white;
+    font-weight:bold;
+}
+
+@media(max-width:600px){
+    .grid{
+        grid-template-columns:1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+<h1>🛠️ MastiHub Admin</h1>
+
+<!-- DASHBOARD -->
+
+<div class="grid">
+
+<div class="card">
+<div>👥 Total Users</div>
+<div class="stat blue">{{ total_users }}</div>
+</div>
+
+<div class="card">
+<div>⭐ Total User Points</div>
+<div class="stat yellow">{{ total_points }}</div>
+</div>
+
+<div class="card">
+<div>🎁 User Reward Value</div>
+<div class="stat">₹{{ "%.2f"|format(reward_value) }}</div>
+</div>
+
+<div class="card">
+<div>💸 Approved Withdrawals</div>
+<div class="stat green">₹{{ approved_withdrawals }}</div>
+</div>
+
+<div class="card">
+<div>⏳ Pending Withdrawals</div>
+<div class="stat yellow">₹{{ pending_withdrawals }}</div>
+</div>
+
+<div class="card">
+<div>📊 Total Withdrawal Requests</div>
+<div class="stat">{{ total_withdrawals }}</div>
+</div>
+
+</div>
+
+
+<!-- ADMIN EARNING -->
+
+<div class="card">
+
+<h2>💰 Admin Earnings</h2>
+
+<p>
+<b>Total Revenue:</b>
+₹{{ "%.2f"|format(total_revenue) }}
+</p>
+
+<p>
+<b>User Rewards:</b>
+₹{{ "%.2f"|format(reward_value) }}
+</p>
+
+<p>
+<b>Approved Withdrawals:</b>
+₹{{ "%.2f"|format(approved_withdrawals) }}
+</p>
+
+<p>
+<b>Admin Net Earnings:</b>
+₹{{ "%.2f"|format(admin_net) }}
+</p>
+
+<hr>
+
+<h3>➕ Add Real Revenue</h3>
+
+<form method="POST" action="/admin/revenue">
+
+<input
+type="number"
+step="0.01"
+name="amount"
+placeholder="Revenue amount"
+required>
+
+<input
+type="text"
+name="source"
+placeholder="Source: Sponsor / Ads"
+required>
+
+<br>
+
+<button type="submit">
+Add Revenue
+</button>
+
+</form>
+<hr>
+</form>
+
+<hr>
+
+<h3>📜 Revenue History</h3>
+
+{% if revenue_history %}
+{% for r in revenue_history %}
+
+<div class="card">
+<b>💰 Amount:</b> ₹{{ "%.2f"|format(r.amount) }}<br>
+<b>📌 Source:</b> {{ r.source }}<br>
+<b>📅 Date:</b> {{ r.created_at }}<br>
+
+<form method="POST"
+      action="/admin/revenue/{{ r.id }}/delete"
+      onsubmit="return confirm('इस revenue entry को delete करें?');">
+
+<button type="submit"
+style="background:#dc2626;margin-top:8px;">
+🗑️ Delete
+</button>
+
+</form>
+</div>
+
+{% endfor %}
+{% else %}
+
+<p>अभी कोई revenue record नहीं है।</p>
+
+{% endif %}
+
+</div>
+
+<!-- WITHDRAWALS -->
+</div>
+
+
+<!-- WITHDRAWALS -->
+
+<h2>💳 Withdrawal Requests</h2>
+
+{% if withdrawals %}
+
+{% for w in withdrawals %}
+
+<div class="card">
+
+<b>User:</b> {{ w.username }}<br>
+<b>Amount:</b> ₹{{ w.amount }}<br>
+<b>Points:</b> {{ w.points_used }}<br>
+<b>UPI:</b> {{ w.upi }}<br>
+<b>Status:</b> {{ w.status }}<br>
+
+{% if w.status == "Pending" %}
+
+<br>
+
+<a class="btn approve"
+href="/admin/withdraw/{{ w.id }}/approve">
+Approve
+</a>
+
+<a class="btn reject"
+href="/admin/withdraw/{{ w.id }}/reject">
+Reject
+</a>
+
+{% endif %}
+
+</div>
+
+{% endfor %}
+
+{% else %}
+
+<p>No withdrawal requests.</p>
+
+{% endif %}
+
+
+<!-- USERS -->
+
+<h2>👥 Users</h2>
+
+{% for user in users %}
+
+<div class="card">
+
+<b>{{ user.username }}</b>
+
+<br>
+
+Points: {{ user.points }}
+
+</div>
+
+{% endfor %}
+
+
+<a class="btn" href="/admin/logout">
+Logout
+</a>
+
+</div>
+
+</body>
+</html>

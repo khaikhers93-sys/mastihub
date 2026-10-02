@@ -1,0 +1,5 @@
+mastihub.db
+*.db
+__pycache__/
+.env
+app_backup.py

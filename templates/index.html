@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MastiHub</title>
+
+<style>
+body{
+    font-family:Arial;
+    background:#f3f5f9;
+    margin:0;
+}
+
+.header{
+    background:linear-gradient(135deg,#6c2cff,#9b59ff);
+    color:white;
+    padding:25px;
+}
+
+.box{
+    max-width:600px;
+    margin:20px auto;
+    padding:18px;
+}
+
+.card,.mission{
+    background:white;
+    padding:20px;
+    margin-bottom:15px;
+    border-radius:18px;
+    box-shadow:0 5px 20px #ddd;
+}
+
+.points{
+    font-size:40px;
+    font-weight:bold;
+    color:#6c2cff;
+}
+
+.mission{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.btn{
+    background:#6c2cff;
+    color:white;
+    padding:11px 15px;
+    border-radius:10px;
+    text-decoration:none;
+}
+
+.logout{
+    display:block;
+    text-align:center;
+    background:#222;
+    color:white;
+    padding:13px;
+    border-radius:10px;
+    text-decoration:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+<h1>🎮 MastiHub</h1>
+<p>Welcome, {{ user.username }}</p>
+</div>
+
+<div class="box">
+
+<div class="card">
+<p>⭐ Total Points</p>
+
+<div class="points">
+{{ user.points }}
+</div>
+
+<p>🎯 Today: {{ user.today_points or 0 }} / 1000 Points</p>
+<p>💰 1000 Points = ₹100</p>
+</div>
+
+<h2>🎯 Daily Missions</h2>
+
+{% for mission in missions %}
+
+<div class="mission">
+
+<div>
+<b>{{ mission.title }}</b>
+<br>
+<span>+{{ mission.points }} Points</span>
+</div>
+
+{% if mission.completed %}
+<span>✅ Completed</span>
+{% elif user.points < 1000 %}
+<a class="btn" href="/mission/{{ mission.id }}">Start</a>
+{% else %}
+<span>🎯 Daily Limit</span>
+{% endif %}
+
+</div>
+
+{% endfor %}
+
+
+<a class="btn" href="/withdraw">
+💰 Withdraw
+</a>
+
+<a class="btn" href="/history">
+📜 Withdrawal History
+</a>
+
+<a class="logout" href="/logout">
+🚪 Logout
+</a>
+
+</div>
+
+</body>
+</html>

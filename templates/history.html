@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Withdrawal History</title>
+<style>
+body{font-family:Arial;background:#f3f5f9;margin:0}
+.box{max-width:600px;margin:30px auto;padding:18px}
+.card{background:white;padding:18px;margin-bottom:12px;border-radius:16px}
+.pending{color:#d88900}
+.approved{color:green}
+.rejected{color:red}
+a{color:#6c2cff}
+</style>
+</head>
+<body>
+<div class="box">
+<h1>📜 Withdrawal History</h1>
+
+{% if withdrawals %}
+
+{% for item in withdrawals %}
+<div class="card">
+<b>₹{{ item.amount }}</b>
+<p>Points used: {{ item.points_used }}</p>
+<p>UPI: {{ item.upi }}</p>
+<p>Date: {{ item.created_at }}</p>
+
+{% if item.status == "Approved" %}
+<p class="approved">✅ Approved</p>
+{% elif item.status == "Rejected" %}
+<p class="rejected">❌ Rejected</p>
+{% else %}
+<p class="pending">⏳ Pending</p>
+{% endif %}
+
+</div>
+{% endfor %}
+
+{% else %}
+<div class="card">
+<p>अभी कोई withdrawal नहीं है।</p>
+</div>
+{% endif %}
+
+<a href="/">← Dashboard</a>
+</div>
+</body>
+</html>
