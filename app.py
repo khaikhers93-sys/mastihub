@@ -65,9 +65,22 @@ def init_db():
             points_used INTEGER NOT NULL,
             upi TEXT NOT NULL,
             status TEXT NOT NULL DEFAULT 'Pending',
-            created_at TEXT NOT NULL
+            created_at TEXT NOT NULL,
+            utr TEXT,
+            paid_at TEXT
         )
     """)
+
+    withdrawal_columns = [
+        row["name"]
+        for row in conn.execute("PRAGMA table_info(withdrawals)").fetchall()
+    ]
+
+    if "utr" not in withdrawal_columns:
+        conn.execute("ALTER TABLE withdrawals ADD COLUMN utr TEXT")
+
+    if "paid_at" not in withdrawal_columns:
+        conn.execute("ALTER TABLE withdrawals ADD COLUMN paid_at TEXT")
 
     conn.execute("""
         CREATE TABLE IF NOT EXISTS platform_revenue (
@@ -560,7 +573,7 @@ def admin():
     )
 
 
-@app.route("/admin/withdraw/<int:withdrawal_id>/<action>")
+@app.route("/admin/withdraw/<int:withdrawal_id>/<action>", methods=["GET", "POST"])
 def admin_withdraw(withdrawal_id, action):
 
     if not session.get("admin"):
@@ -582,9 +595,32 @@ def admin_withdraw(withdrawal_id, action):
 
     if action == "approve":
 
+        if request.method == "GET":
+            conn.close()
+            return render_template(
+                "payment.html",
+                withdrawal=withdrawal
+            )
+
+        utr = request.form.get("utr", "").strip()
+
+        if not utr:
+            conn.close()
+            return render_template(
+                "payment.html",
+                withdrawal=withdrawal,
+                error="UTR / Transaction ID डालें।"
+            )
+
         conn.execute(
-            "UPDATE withdrawals SET status='Approved' WHERE id=?",
-            (withdrawal_id,)
+            """
+            UPDATE withdrawals
+            SET status='Paid',
+                utr=?,
+                paid_at=?
+            WHERE id=?
+            """,
+            (utr, str(date.today()), withdrawal_id)
         )
 
     else:

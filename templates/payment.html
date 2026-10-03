@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Payment - MastiHub Admin</title>
+
+    <style>
+        body{
+            font-family:Arial;
+            background:#0f172a;
+            color:white;
+            margin:0;
+        }
+
+        .box{
+            max-width:500px;
+            margin:40px auto;
+            padding:20px;
+        }
+
+        .card{
+            background:#1e293b;
+            padding:20px;
+            border-radius:16px;
+        }
+
+        input,button{
+            width:100%;
+            box-sizing:border-box;
+            padding:13px;
+            margin:8px 0;
+            border-radius:8px;
+            border:0;
+        }
+
+        button{
+            background:#16a34a;
+            color:white;
+            font-weight:bold;
+            font-size:16px;
+        }
+
+        .error{
+            color:#f87171;
+        }
+
+        a{
+            color:#38bdf8;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+
+    <h1>💸 Pay Withdrawal</h1>
+
+    <div class="card">
+
+        <p><b>User:</b> {{ withdrawal.user_id }}</p>
+
+        <p><b>Amount:</b> ₹{{ withdrawal.amount }}</p>
+
+        <p><b>Points Used:</b> {{ withdrawal.points_used }}</p>
+
+        <p><b>UPI ID:</b> {{ withdrawal.upi }}</p>
+
+        <hr>
+
+        <p>
+            पहले अपने UPI app से ऊपर दिए गए UPI ID पर
+            <b>₹{{ withdrawal.amount }}</b> भेजें।
+        </p>
+
+        <p>Payment सफल होने के बाद UTR / Transaction ID नीचे डालें:</p>
+
+        {% if error %}
+        <p class="error">{{ error }}</p>
+        {% endif %}
+
+        <form method="POST">
+
+            <input
+                type="text"
+                name="utr"
+                placeholder="UTR / Transaction ID"
+                required
+            >
+
+            <button type="submit">
+                ✅ Mark as Paid
+            </button>
+
+        </form>
+
+        <br>
+
+        <a href="/admin">← Back to Admin</a>
+
+    </div>
+
+</div>
+
+</body>
+</html>
