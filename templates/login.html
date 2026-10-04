@@ -1,34 +1,210 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9061192113102783"
-     crossorigin="anonymous"></script>
-
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>MastiHub Login</title>
+
 <style>
-body{font-family:Arial;background:#f3f5f9;margin:0}
-.box{max-width:400px;margin:70px auto;background:white;padding:25px;border-radius:20px;box-shadow:0 5px 20px #ddd}
-h1{text-align:center;color:#6c2cff}
-input,button{width:100%;padding:14px;margin:8px 0;box-sizing:border-box;border-radius:10px}
-input{border:1px solid #ddd}
-button{border:0;background:#6c2cff;color:white;font-size:17px}
-a{color:#6c2cff}
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    min-height:100vh;
+    font-family:Arial,sans-serif;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+    background:linear-gradient(135deg,#12002b,#24005c,#001f4d,#090018);
+    background-size:400% 400%;
+    animation:bg 10s ease infinite;
+    color:white;
+}
+
+@keyframes bg{
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+
+/* Floating hearts */
+.heart{
+    position:absolute;
+    color:#ff2d75;
+    font-size:25px;
+    animation:float 6s linear infinite;
+    opacity:.8;
+    filter:drop-shadow(0 0 12px #ff2d75);
+}
+
+.h1{left:10%;animation-delay:0s}
+.h2{left:80%;animation-delay:2s;font-size:35px}
+.h3{left:25%;animation-delay:4s;font-size:18px}
+.h4{left:65%;animation-delay:1s;font-size:20px}
+
+@keyframes float{
+    0%{transform:translateY(110vh) rotate(0deg);opacity:0}
+    15%{opacity:1}
+    100%{transform:translateY(-15vh) rotate(360deg);opacity:0}
+}
+
+/* Main card */
+.box{
+    position:relative;
+    z-index:5;
+    width:90%;
+    max-width:400px;
+    padding:30px 25px;
+    border-radius:25px;
+    text-align:center;
+    background:rgba(255,255,255,.10);
+    border:1px solid rgba(255,255,255,.25);
+    backdrop-filter:blur(18px);
+    box-shadow:0 0 35px rgba(157,78,255,.45);
+    animation:card 1s ease;
+}
+
+@keyframes card{
+    from{transform:translateY(50px) scale(.9);opacity:0}
+    to{transform:translateY(0) scale(1);opacity:1}
+}
+
+/* Big heart */
+.bigheart{
+    font-size:75px;
+    display:inline-block;
+    animation:heartbeat 1.2s infinite;
+    filter:drop-shadow(0 0 20px #ff247d);
+}
+
+@keyframes heartbeat{
+    0%,100%{transform:scale(1)}
+    15%{transform:scale(1.18)}
+    30%{transform:scale(1)}
+    45%{transform:scale(1.12)}
+}
+
+h1{
+    margin:5px 0;
+    font-size:32px;
+    background:linear-gradient(90deg,#ff4d9d,#9b5cff,#35d9ff);
+    -webkit-background-clip:text;
+    color:transparent;
+}
+
+h2{
+    margin:8px 0 20px;
+}
+
+input{
+    width:100%;
+    padding:15px;
+    margin:8px 0;
+    border:1px solid rgba(255,255,255,.25);
+    border-radius:12px;
+    outline:none;
+    background:rgba(255,255,255,.12);
+    color:white;
+    font-size:16px;
+}
+
+input::placeholder{
+    color:#ddd;
+}
+
+input:focus{
+    border-color:#ff3f91;
+    box-shadow:0 0 15px rgba(255,63,145,.5);
+}
+
+button{
+    width:100%;
+    padding:15px;
+    margin-top:12px;
+    border:0;
+    border-radius:12px;
+    color:white;
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
+    background:linear-gradient(90deg,#ff267c,#7c35ff,#00cfff);
+    background-size:200% 200%;
+    animation:buttonGlow 3s infinite;
+    box-shadow:0 0 20px rgba(255,38,124,.45);
+}
+
+@keyframes buttonGlow{
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+
+button:active{
+    transform:scale(.96);
+}
+
+a{
+    color:#58ddff;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+.links{
+    position:fixed;
+    bottom:15px;
+    z-index:6;
+    font-size:13px;
+}
+
+.links a{
+    margin:0 5px;
+}
 </style>
 </head>
+
 <body>
+
+<div class="heart h1">❤️</div>
+<div class="heart h2">💜</div>
+<div class="heart h3">💙</div>
+<div class="heart h4">💖</div>
+
 <div class="box">
-<h1>🎮 MastiHub</h1>
-<h2>Login</h2>
-<form method="POST">
-<input name="username" placeholder="Username" required>
-<input name="password" type="password" placeholder="Password" required>
-<button type="submit">Login</button>
-</form>
-<p>Account नहीं है? <a href="/register">Register करें</a></p>
+
+    <div class="bigheart">❤️</div>
+
+    <h1>🎮 MastiHub</h1>
+    <h2>Welcome Back 👋</h2>
+
+    <form method="POST">
+
+        <input
+            name="username"
+            placeholder="👤 Username"
+            required
+        >
+
+        <input
+            name="password"
+            type="password"
+            placeholder="🔐 Password"
+            required
+        >
+
+        <button type="submit">
+            🚀 LOGIN
+        </button>
+
+    </form>
+
+    <p>
+        Account नहीं है?
+        <a href="/register">Register करें</a>
+    </p>
+
 </div>
 
-<div style="text-align:center;margin-top:20px;font-size:14px">
+<div class="links">
     <a href="/about">About</a> |
     <a href="/contact">Contact</a> |
     <a href="/privacy">Privacy Policy</a>
