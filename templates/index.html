@@ -63,10 +63,155 @@ body{
     border-radius:10px;
     text-decoration:none;
 }
+
+/* ===== MASTIHUB DASHBOARD ANIMATION ===== */
+
+body{
+    background:linear-gradient(-45deg,#f3f5f9,#eee5ff,#f8f1ff,#e9e2ff);
+    background-size:400% 400%;
+    animation:mhfxBg 12s ease infinite;
+    overflow-x:hidden;
+}
+
+@keyframes mhfxBg{
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+
+.header{
+    position:relative;
+    overflow:hidden;
+    background:linear-gradient(135deg,#6c2cff,#9b59ff,#d45cff);
+    background-size:200% 200%;
+    animation:mhfxHeader 5s ease infinite;
+    box-shadow:0 8px 30px rgba(108,44,255,.25);
+}
+
+@keyframes mhfxHeader{
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+
+.header h1{
+    animation:mhfxGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes mhfxGlow{
+    from{text-shadow:0 0 5px rgba(255,255,255,.4)}
+    to{text-shadow:0 0 20px rgba(255,255,255,.95)}
+}
+
+.card,.mission{
+    position:relative;
+    transition:transform .3s ease,box-shadow .3s ease;
+    animation:mhfxCard .7s ease both;
+}
+
+.card:hover,.mission:hover{
+    transform:translateY(-4px);
+    box-shadow:0 10px 28px rgba(108,44,255,.18);
+}
+
+.mission:nth-of-type(1){animation-delay:.1s}
+.mission:nth-of-type(2){animation-delay:.2s}
+.mission:nth-of-type(3){animation-delay:.3s}
+.mission:nth-of-type(4){animation-delay:.4s}
+.mission:nth-of-type(5){animation-delay:.5s}
+
+@keyframes mhfxCard{
+    from{
+        opacity:0;
+        transform:translateY(18px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+.points{
+    animation:mhfxPoints 2s ease-in-out infinite alternate;
+}
+
+@keyframes mhfxPoints{
+    from{
+        transform:scale(1);
+        text-shadow:0 0 0 rgba(108,44,255,0);
+    }
+    to{
+        transform:scale(1.04);
+        text-shadow:0 0 15px rgba(108,44,255,.35);
+    }
+}
+
+.btn{
+    transition:transform .2s ease,box-shadow .2s ease;
+    box-shadow:0 4px 12px rgba(108,44,255,.25);
+}
+
+.btn:hover{
+    transform:translateY(-2px) scale(1.03);
+    box-shadow:0 8px 20px rgba(108,44,255,.35);
+}
+
+/* Floating hearts */
+.mhfx-heart{
+    position:fixed;
+    bottom:-40px;
+    z-index:0;
+    pointer-events:none;
+    opacity:0;
+    font-size:22px;
+    animation:mhfxHeart 9s linear infinite;
+}
+
+.mhfx-h1{left:8%;animation-delay:0s}
+.mhfx-h2{left:25%;animation-delay:2s;font-size:16px}
+.mhfx-h3{left:48%;animation-delay:4s;font-size:26px}
+.mhfx-h4{left:70%;animation-delay:1s;font-size:18px}
+.mhfx-h5{left:88%;animation-delay:5s;font-size:24px}
+
+@keyframes mhfxHeart{
+    0%{
+        transform:translateY(0) rotate(0deg) scale(.7);
+        opacity:0;
+    }
+    15%{opacity:.45}
+    50%{
+        transform:translateY(-45vh) rotate(15deg) scale(1);
+        opacity:.25;
+    }
+    100%{
+        transform:translateY(-110vh) rotate(-15deg) scale(1.2);
+        opacity:0;
+    }
+}
+
+.box,.header{
+    z-index:1;
+}
+
+@media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{
+        animation-duration:.01ms !important;
+        animation-iteration-count:1 !important;
+        scroll-behavior:auto !important;
+    }
+}
 </style>
+
 </head>
 
 <body>
+
+<div class="mhfx-heart mhfx-h1">💜</div>
+<div class="mhfx-heart mhfx-h2">💗</div>
+<div class="mhfx-heart mhfx-h3">💖</div>
+<div class="mhfx-heart mhfx-h4">💜</div>
+<div class="mhfx-heart mhfx-h5">💗</div>
+
 
 <div class="header">
 <h1>🎮 MastiHub</h1>
