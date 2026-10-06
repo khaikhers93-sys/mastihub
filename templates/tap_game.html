@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tap Challenge - MastiHub</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    min-height:100vh;
+    font-family:Arial,sans-serif;
+    background:linear-gradient(135deg,#6c2cff,#ff4f9a,#00c6ff);
+    background-size:300% 300%;
+    animation:bg 8s ease infinite;
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+@keyframes bg{
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+
+.game{
+    width:92%;
+    max-width:430px;
+    text-align:center;
+    background:rgba(0,0,0,.25);
+    padding:25px;
+    border-radius:25px;
+    backdrop-filter:blur(12px);
+    box-shadow:0 20px 50px rgba(0,0,0,.3);
+}
+
+h1{
+    margin-top:0;
+    font-size:32px;
+}
+
+.stats{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    margin:20px 0;
+}
+
+.stat{
+    flex:1;
+    background:rgba(255,255,255,.18);
+    padding:15px;
+    border-radius:15px;
+}
+
+.number{
+    display:block;
+    font-size:30px;
+    font-weight:bold;
+}
+
+#tapButton{
+    width:210px;
+    height:210px;
+    border:none;
+    border-radius:50%;
+    background:white;
+    color:#6c2cff;
+    font-size:38px;
+    font-weight:bold;
+    box-shadow:0 15px 35px rgba(0,0,0,.3);
+    transition:.1s;
+    cursor:pointer;
+}
+
+#tapButton:active{
+    transform:scale(.90);
+}
+
+#tapButton:disabled{
+    opacity:.6;
+}
+
+#startButton,
+.back{
+    display:block;
+    width:100%;
+    padding:14px;
+    margin-top:20px;
+    border:none;
+    border-radius:12px;
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
+    text-decoration:none;
+}
+
+#startButton{
+    background:#00e676;
+    color:#111;
+}
+
+.back{
+    background:rgba(255,255,255,.18);
+    color:white;
+}
+
+.result{
+    margin-top:20px;
+    font-size:22px;
+    font-weight:bold;
+    min-height:30px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="game">
+
+<h1>🎮 Tap Challenge</h1>
+
+<p>10 seconds में जितनी बार tap कर सकते हो करो!</p>
+
+<div class="stats">
+    <div class="stat">
+        <span class="number" id="score">0</span>
+        Taps
+    </div>
+
+    <div class="stat">
+        <span class="number" id="time">10</span>
+        Seconds
+    </div>
+</div>
+
+<button id="tapButton" disabled>👆 TAP</button>
+
+<button id="startButton">🚀 START GAME</button>
+
+<div class="result" id="result"></div>
+
+<a class="back" href="/">🏠 Back to MastiHub</a>
+
+</div>
+
+<script>
+let score = 0;
+let time = 10;
+let playing = false;
+let timer;
+
+const scoreEl = document.getElementById("score");
+const timeEl = document.getElementById("time");
+const tapButton = document.getElementById("tapButton");
+const startButton = document.getElementById("startButton");
+const result = document.getElementById("result");
+
+tapButton.addEventListener("click", function(){
+    if(!playing) return;
+
+    score++;
+    scoreEl.textContent = score;
+});
+
+startButton.addEventListener("click", function(){
+
+    if(playing) return;
+
+    score = 0;
+    time = 10;
+    playing = true;
+
+    scoreEl.textContent = score;
+    timeEl.textContent = time;
+
+    result.textContent = "";
+    tapButton.disabled = false;
+    startButton.disabled = true;
+    startButton.textContent = "🔥 GAME RUNNING...";
+
+    timer = setInterval(function(){
+
+        time--;
+        timeEl.textContent = time;
+
+        if(time <= 0){
+            clearInterval(timer);
+
+            playing = false;
+            tapButton.disabled = true;
+            startButton.disabled = false;
+            startButton.textContent = "🔄 PLAY AGAIN";
+
+            result.textContent =
+                "🏆 आपका Score: " + score + " Taps!";
+        }
+
+    },1000);
+});
+</script>
+
+</body>
+</html>

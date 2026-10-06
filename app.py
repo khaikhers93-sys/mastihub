@@ -656,6 +656,14 @@ def admin_logout():
 init_db()
 
 
+
+@app.route("/game/tap")
+def tap_game():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    return render_template("tap_game.html")
+
+
 if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
