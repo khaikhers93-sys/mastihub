@@ -537,7 +537,7 @@ def admin():
     approved_withdrawals = conn.execute("""
         SELECT COALESCE(SUM(amount), 0) AS s
         FROM withdrawals
-        WHERE status = 'Approved'
+        WHERE status = 'Paid'
     """).fetchone()["s"]
 
     pending_withdrawals = conn.execute("""
@@ -560,6 +560,7 @@ def admin():
     """).fetchall()
 
     admin_net = total_revenue - approved_withdrawals
+    available_payout = max(0, admin_net)
 
     conn.close()
 
@@ -575,7 +576,8 @@ def admin():
         pending_withdrawals=pending_withdrawals,
         total_revenue=total_revenue,
         revenue_history=revenue_history,
-        admin_net=admin_net
+        admin_net=admin_net,
+        available_payout=available_payout
     )
 
 
@@ -600,6 +602,25 @@ def admin_withdraw(withdrawal_id, action):
         return redirect(url_for("admin"))
 
     if action == "approve":
+
+        # Platform revenue minus already paid withdrawals
+        total_revenue = conn.execute(
+            "SELECT COALESCE(SUM(amount), 0) AS s FROM platform_revenue"
+        ).fetchone()["s"]
+
+        paid_withdrawals = conn.execute(
+            "SELECT COALESCE(SUM(amount), 0) AS s FROM withdrawals WHERE status='Paid'"
+        ).fetchone()["s"]
+
+        available_payout = float(total_revenue or 0) - float(paid_withdrawals or 0)
+
+        if float(withdrawal["amount"]) > available_payout:
+            conn.close()
+            return render_template(
+                "payment.html",
+                withdrawal=withdrawal,
+                error=f"Platform balance ₹{max(0, available_payout):.2f} है। इस withdrawal के लिए पर्याप्त balance नहीं है।"
+            )
 
         if request.method == "GET":
             conn.close()
