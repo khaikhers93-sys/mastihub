@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ title }} - MastiHub</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#eee5ff,#f8f1ff);color:#29213d}
+header{background:linear-gradient(135deg,#6c2cff,#a45cff);color:white;text-align:center;padding:18px}
+main{max-width:560px;margin:20px auto;padding:12px}
+.card{background:white;padding:22px 15px;border-radius:20px;box-shadow:0 5px 22px #ddd;text-align:center}
+button{border:0;background:#6c2cff;color:white;padding:13px 18px;border-radius:12px;font-size:17px;margin:5px;cursor:pointer}
+button:disabled{opacity:.5}
+#message{font-weight:bold;font-size:18px;min-height:28px;margin:15px 0}
+.big{font-size:38px;font-weight:bold;color:#6c2cff}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:330px;margin:15px auto}
+.tile{min-height:65px;font-size:24px;margin:0;padding:8px}
+.memory{background:#eee5ff;color:#6c2cff}
+input{padding:12px;border:1px solid #bbb;border-radius:9px;font-size:18px;width:100%;margin:8px 0}
+a{color:#6c2cff}
+</style>
+</head>
+<body>
+<header><h1>🎮 MastiHub</h1><p>{{ title }}</p></header>
+<main><div class="card">
+<h2>{{ title }}</h2>
+<p>🏆 Reward: <b>+{{ points }} Points</b></p>
+<div id="game"></div>
+<div id="message" aria-live="polite">Game shuru karne ke liye taiyar ho?</div>
+<p><a href="/">← MastiHub Home</a></p>
+</div></main>
+<script>
+const id={{ mission_id|int }};
+const game=document.getElementById('game');
+const msg=document.getElementById('message');
+let ended=false;
+function say(t){msg.textContent=t}
+function btn(t,fn){let b=document.createElement('button');b.textContent=t;b.onclick=fn;game.appendChild(b);return b}
+function win(){
+ if(ended)return;
+ ended=true;
+ say('Challenge complete! Reward process ho raha hai...');
+ fetch(location.pathname,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'completed=1'})
+ .then(r=>{if(!r.ok)throw Error();return r.text()})
+ .then(()=>{say('✅ Game complete! Points update ho gaye.');let a=document.createElement('a');a.href='/';a.textContent='Home par jao';game.appendChild(document.createElement('br'));game.appendChild(a)})
+ .catch(()=>{ended=false;say('Reward update nahi hua. Internet check karke dobara try karo.')});
+}
+function quiz(){
+ game.innerHTML='<h3>2 + 3 kitna hota hai?</h3>';
+ [4,5,6].forEach(n=>btn(n,()=>n===5?win():say('❌ Galat jawab, dobara try karo!')));
+}
+function tap(){
+ game.innerHTML='<p>10 seconds mein 15 taps karo!</p><div class="big" id="count">0</div><p id="clock">10 seconds</p>';
+ let count=0,time=10,playing=false,timer;
+ const c=document.getElementById('count'),cl=document.getElementById('clock');
+ let b=btn('🚀 START',()=>{if(playing)return;playing=true;b.disabled=true;let t=btn('TAP!',()=>{if(playing){count++;c.textContent=count;if(count>=15){playing=false;clearInterval(timer);win()}}});
+ timer=setInterval(()=>{time--;cl.textContent=time+' seconds';if(time<=0){clearInterval(timer);playing=false;t.disabled=true;if(count>=15)win();else say('Time up! '+count+' taps hue. Page reload karke phir try karo.')}},1000)});
+}
+function memory(){
+ let symbols=['🍎','🍋','🚀','🍎','🍋','🚀'];symbols.sort(()=>Math.random()-.5);
+ let chosen=[],matches=0,locked=false;
+ game.innerHTML='<p>3 matching pairs dhoondo.</p><div class="grid" id="mg"></div>';
+ let g=document.getElementById('mg');
+ symbols.forEach((s,i)=>{let b=document.createElement('button');b.className='tile memory';b.textContent='?';b.onclick=()=>{
+ if(locked||b.dataset.open||b.dataset.done)return;
+ b.textContent=s;b.dataset.open='1';chosen.push({b,s});
+ if(chosen.length===2){locked=true;
+ if(chosen[0].s===chosen[1].s){chosen.forEach(x=>x.b.dataset.done='1');matches++;chosen=[];locked=false;if(matches===3)win()}
+ else setTimeout(()=>{chosen.forEach(x=>{x.b.textContent='?';delete x.b.dataset.open});chosen=[];locked=false},650)}
+ };g.appendChild(b)});
+}
+function puzzle(){
+ let nums=[1,2,3,4,5,6,7,8,0].sort(()=>Math.random()-.5),next=1;
+ game.innerHTML='<p>Tiles ko 1 se 8 tak order mein dabao.</p><div class="grid" id="pg"></div>';
+ let g=document.getElementById('pg');
+ nums.forEach(n=>{let b=document.createElement('button');b.className='tile';b.textContent=n||'★';b.onclick=()=>{
+ if(n===next){b.disabled=true;b.style.background='#19a974';next++;say('Sahi! Agla number: '+next);if(next===9)win()}
+ else say('❌ Galat tile! '+next+' dabao.');
+ };g.appendChild(b)});
+}
+function quick(){
+ let n=0;game.innerHTML='<p>Button 5 baar dabao.</p><div class="big" id="q">0 / 5</div>';
+ btn('TAP',()=>{n++;document.getElementById('q').textContent=n+' / 5';if(n>=5)win()});
+}
+function speed(){
+ let target=Math.floor(Math.random()*9)+1;
+ game.innerHTML='<p>Target number: <b>'+target+'</b></p><p>10 seconds mein target 3 baar chuno.</p>';
+ let n=0,time=10;let c=document.createElement('p');c.textContent='Time: 10';game.appendChild(c);
+ for(let i=1;i<=9;i++)btn(i,()=>{if(i===target){n++;say('Sahi! '+n+'/3');if(n===3)win()}else say('Dobara try karo!')});
+ let timer=setInterval(()=>{time--;c.textContent='Time: '+time;if(time<=0){clearInterval(timer);if(!ended)say('Time up! Page reload karke try karo.')}},1000);
+}
+function bonus(){
+ game.innerHTML='<p>Kaunsa number sabse bada hai?</p>';
+ [17,29,23].sort(()=>Math.random()-.5).forEach(n=>btn(n,()=>n===29?win():say('Dobara socho!')));
+}
+function lucky(){
+ game.innerHTML='<p>Ek box chuno. Sahi box mein ⭐ hai!</p>';
+ let prize=Math.floor(Math.random()*3);
+ for(let i=0;i<3;i++)btn('🎁 Box '+(i+1),()=>{if(i===prize)win();else say('Ismein star nahi hai. Page reload karke try karo.')});
+}
+function finalGame(){
+ let target=Math.floor(Math.random()*8)+2;
+ game.innerHTML='<p>Challenge: '+target+' + 2 = ?</p>';
+ [target+1,target+2,target+3].forEach(n=>btn(n,()=>n===target+2?win():say('Galat jawab!')));
+}
+function daily(){
+ game.innerHTML='<p>Aaj ka bonus: 10 se 1 tak ulta gino.</p><input id="answer" inputmode="numeric" placeholder="10 9 8 7 6 5 4 3 2 1"><button id="check">Check Answer</button>';
+ document.getElementById('check').onclick=()=>{let v=document.getElementById('answer').value.replace(/[\s,]+/g,'').trim();if(v==='10987654321')win();else say('Format check karo: 10 9 8 ... 1')};
+}
+switch(id){
+ case 1:quiz();break;
+ case 2:tap();break;
+ case 3:memory();break;
+ case 4:puzzle();break;
+ case 5:quick();break;
+ case 6:speed();break;
+ case 7:bonus();break;
+ case 8:lucky();break;
+ case 9:finalGame();break;
+ case 10:daily();break;
+ default:say('Game nahi mila.');
+}
+</script>
+</body>
+</html>
